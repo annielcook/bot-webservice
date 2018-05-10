@@ -19,13 +19,24 @@ async def issue_opened_event(event, gh, *args, **kwargs):
 
 @router.register("pull_request", action="closed")
 async def issue_pr_thanks_you(event, gh, *args, **kwargs):
-    merged = event.data["pull_request"]["merged"] is True
+    merged = event.data["pull_request"]["merged"]
     if merged is True:
         url = event.data["pull_request"]["comments_url"]
         author = event.data["pull_request"]["user"]["login"]
         message = f"Howdy {author}! Thanks for contributing"
         await gh.post(url, data={"body": message})
-        
+
+
+@router.register("issue_comment", action="created")
+async def thumbs_up_my_comments(event, gh, *args, **kwargs):
+    comment_url = event.data["issue_comment"]["comment"]["url"]
+    author = event.data["issue_comment"]["comment"]["user"]["login"]
+
+    if author == "annielcook":
+        await gh.post(f"{comment_url}/reactions", data={
+            "content": "heart"
+        })
+
 
 async def main(request):
     # read the GitHub webhook payload
