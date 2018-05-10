@@ -11,9 +11,12 @@ router = routing.Router()
 
 @router.register("issues", action="opened")
 async def issue_opened_event(event, gh, *args, **kwargs):
+    # get the info from the event data
     author = event.data["issue"]["user"]["login"]
     message = f"Howdy {author} Thanks for creating an issue!"
     url = event.data["issue"]["comments_url"]
+
+    # post the comment
     await gh.post(url, data={"body": message})
 
 
