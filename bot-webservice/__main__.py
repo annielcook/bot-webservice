@@ -17,6 +17,16 @@ async def issue_opened_event(event, gh, *args, **kwargs):
     await gh.post(url, data={"body": message})
 
 
+@router.register("pull_request", action="closed")
+async def issue_pr_thanks_you(event, gh, *args, **kwargs):
+    merged = event.data["pull_request"]["merged"] is True
+    if merged is True:
+        url = event.data["pull_request"]["comments_url"]
+        author = event.data["pull_request"]["user"]["login"]
+        message = f"Howdy {author}! Thanks for contributing"
+        await gh.post(url, data={"body": message})
+        
+
 async def main(request):
     # read the GitHub webhook payload
     body = await request.read()
