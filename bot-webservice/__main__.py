@@ -29,13 +29,13 @@ async def issue_pr_thanks_you(event, gh, *args, **kwargs):
 
 @router.register("issue_comment", action="created")
 async def thumbs_up_my_comments(event, gh, *args, **kwargs):
-    comment_url = event.data["issue_comment"]["comment"]["url"]
+    url = f'{event.data["issue_comment"]["comment"]["url"]}/reactions'
     author = event.data["issue_comment"]["comment"]["user"]["login"]
 
     if author == "annielcook":
-        await gh.post(f"{comment_url}/reactions", data={
+        await gh.post(url, data={
             "content": "heart"
-        })
+        }, accept="application/vnd.github.squirrel-girl-preview+json")
 
 
 async def main(request):
